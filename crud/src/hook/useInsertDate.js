@@ -30,40 +30,44 @@ export const useInsertDocument = (docCollection) => {
    
     const [response, dispatch ] = useReducer(Initial_State, ManageState)
 
-    const [document, setDocument] = useState(null)
-    const[loading, setLoading] = useState(null)     
     const [cancelled, setCancelled] = useState(false)
 
-    const checkMemoryleak = () => {
-        return ;
+    const checkMemoryleak = ( action) => {
+        if(!cancelled){
+            dispatch(action)
+        }
     }
      
+    
+    const InsertDoc = async (document) => {
+        checkMemoryleak({
+            type:'LOADING'
+        })
+        
+     const newDocument = {...document, createdAt: Timestamp.now()}
 
-    useEffect(() => {
-     
-       const InsertDoc = async() => { 
+      try {
+         const InsertedDoc = await addDoc(collection(db, docCollection), newDocument)
 
-        try {
+         checkMemoryleak({
+            type:"INSERT_DOC",
+            payload: InsertedDoc
+         })
+
             
         } catch (error) {
-            
+          
+            checkMemoryleak({
+            type:"ERROR",
+            payload: error.message
+          })  
         }
-
-       }
-       
-       InsertDoc()
-    },[])
-
-
-
-
-
-
+    }
+   
    useEffect(() => {
-    return () => {}
+    return () =>  setCancelled(true)
    }, [])
-
-
-
-    return {   }
+    
+   
+   return { InsertDoc, response }
 }
