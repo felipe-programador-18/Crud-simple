@@ -1,0 +1,14 @@
+.register{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: medium;
+}
+
+.register, input {
+    display: flex;
+    text-align: center;
+}
+
+
